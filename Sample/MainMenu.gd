@@ -13,4 +13,12 @@ func _on_btn2analogs2_pressed():
 
 
 func _on_btn2analogs3_pressed():
+	get_tree().change_scene("res://Sample/Sample1Digital1Analog.tscn")
+
+
+func _on_btn2analogs4_pressed():
 	get_tree().change_scene("res://Debug/Debug.tscn")
+
+
+func _on_btn2analogs5_pressed():
+	get_tree().change_scene("res://Sample/Sample1Digital1Button.tscn")

@@ -1,0 +1,249 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Sample/Sample1Digital1Analog.gd" type="Script" id=1]
+[ext_resource path="res://Sample/Tank/Tank.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Sample/Tank/Bullet.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/Gamepad/GamepadContainer.gd" type="Script" id=4]
+[ext_resource path="res://addons/Gamepad/icons/container.png" type="Texture" id=5]
+[ext_resource path="res://addons/Gamepad/GamepadArea.gd" type="Script" id=6]
+[ext_resource path="res://addons/Gamepad/icons/area.png" type="Texture" id=7]
+[ext_resource path="res://addons/Gamepad/GamepadStick.gd" type="Script" id=8]
+[ext_resource path="res://addons/Gamepad/icons/stick.png" type="Texture" id=9]
+[ext_resource path="res://assets/Gamepad/diagonal_light.png" type="Texture" id=10]
+[ext_resource path="res://assets/Gamepad/diagonal_int_dark.png" type="Texture" id=11]
+[ext_resource path="res://assets/Gamepad/omni_light.png" type="Texture" id=12]
+[ext_resource path="res://assets/Gamepad/omni_int_dark.png" type="Texture" id=13]
+[ext_resource path="res://assets/arial.ttf" type="DynamicFontData" id=14]
+
+[sub_resource type="DynamicFont" id=1]
+
+size = 26
+use_mipmaps = false
+use_filter = false
+font_data = ExtResource( 14 )
+_sections_unfolded = [ "Font", "Settings" ]
+
+[sub_resource type="DynamicFont" id=2]
+
+size = 24
+use_mipmaps = false
+use_filter = false
+font_data = ExtResource( 14 )
+_sections_unfolded = [ "Font", "Settings" ]
+
+[node name="Sample1Digital1Analog" type="Node" index="0"]
+
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_horizontal_guides_": [ 668.666 ]
+}
+
+[node name="Tank" parent="." index="0" instance=ExtResource( 2 )]
+
+position = Vector2( 571.841, 305.352 )
+bullet = ExtResource( 3 )
+
+[node name="Gamepad" type="CanvasLayer" parent="." index="1"]
+
+layer = 1
+offset = Vector2( 0, 0 )
+rotation = 0.0
+scale = Vector2( 1, 1 )
+transform = Transform2D( 1, 0, 0, 1, 0, 0 )
+
+[node name="GamepadContainer" type="Control" parent="Gamepad" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 4 )
+__meta__ = {
+"_editor_icon": ExtResource( 5 )
+}
+disabled = false
+
+[node name="GamepadArea" type="Control" parent="Gamepad/GamepadContainer" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+margin_right = 359.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 6 )
+__meta__ = {
+"_editor_icon": ExtResource( 7 )
+}
+disabled = false
+gamepad_type = "AREA"
+
+[node name="GamepadStick" type="Control" parent="Gamepad/GamepadContainer/GamepadArea" index="0"]
+
+modulate = Color( 1, 1, 1, 0.501961 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -126.5
+margin_top = -252.0
+margin_right = 143.5
+margin_bottom = -60.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 8 )
+_sections_unfolded = [ "Rect", "Visibility" ]
+__meta__ = {
+"_editor_icon": ExtResource( 9 )
+}
+disabled = false
+show_dynamically = false
+gamepad_type = "GAMEPAD 0"
+stick_type = 4
+background_texture = ExtResource( 10 )
+stick_texture = ExtResource( 11 )
+stick_scale = Vector2( 2, 2 )
+static_position = Vector2( 53, 468 )
+hide_stick_on_stop = false
+adjust_iso = 33
+valid_threshold = 0.5
+step = 0.0
+
+[node name="GamepadArea2" type="Control" parent="Gamepad/GamepadContainer" index="1"]
+
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -253.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 6 )
+__meta__ = {
+"_editor_icon": ExtResource( 7 )
+}
+disabled = false
+gamepad_type = "AREA"
+
+[node name="GamepadStick" type="Control" parent="Gamepad/GamepadContainer/GamepadArea2" index="0"]
+
+modulate = Color( 1, 1, 1, 0.501961 )
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -96.5
+margin_top = -252.0
+margin_right = 95.5
+margin_bottom = -60.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 8 )
+_sections_unfolded = [ "Anchor", "Grow Direction", "Margin", "Rect", "Size Flags", "Visibility" ]
+__meta__ = {
+"_editor_icon": ExtResource( 9 )
+}
+disabled = false
+show_dynamically = false
+gamepad_type = "GAMEPAD 0"
+stick_type = 0
+background_texture = ExtResource( 12 )
+stick_texture = ExtResource( 13 )
+stick_scale = Vector2( 1, 1 )
+static_position = Vector2( 30, 468 )
+hide_stick_on_stop = false
+adjust_iso = 0
+valid_threshold = 0.2
+step = 0.0
+
+[node name="CheckBox" type="CheckBox" parent="Gamepad" index="1"]
+
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -117.0
+margin_top = -98.0
+margin_right = 117.0
+margin_bottom = -60.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_fonts/font = SubResource( 1 )
+toggle_mode = true
+pressed = true
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Show dynamically"
+flat = false
+align = 0
+_sections_unfolded = [ "custom_fonts" ]
+
+[node name="Button" type="Button" parent="Gamepad" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 24.0
+margin_top = 21.0
+margin_right = 114.0
+margin_bottom = 65.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+custom_fonts/font = SubResource( 2 )
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Back"
+flat = false
+align = 1
+_sections_unfolded = [ "custom_fonts" ]
+
+[connection signal="gamepad_force_changed" from="Gamepad/GamepadContainer/GamepadArea/GamepadStick" to="Tank" method="_on_move"]
+
+[connection signal="gamepad_stick_released" from="Gamepad/GamepadContainer/GamepadArea/GamepadStick" to="Tank" method="_on_stop"]
+
+[connection signal="gamepad_force_changed" from="Gamepad/GamepadContainer/GamepadArea2/GamepadStick" to="Tank" method="_on_fire"]
+
+[connection signal="gamepad_stick_released" from="Gamepad/GamepadContainer/GamepadArea2/GamepadStick" to="Tank" method="_on_stop_fire"]
+
+[connection signal="toggled" from="Gamepad/CheckBox" to="." method="_on_CheckBox_toggled"]
+
+[connection signal="pressed" from="Gamepad/Button" to="." method="_on_Button_pressed"]
+
+

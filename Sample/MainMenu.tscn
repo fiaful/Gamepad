@@ -15,7 +15,7 @@ _sections_unfolded = [ "Font", "Settings" ]
 
 default_font = SubResource( 1 )
 
-[node name="MainMenu" type="Node" index="0"]
+[node name="MainMenu" type="Node"]
 
 script = ExtResource( 1 )
 
@@ -105,11 +105,61 @@ toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 group = null
+text = "1 digital stick + 1 analog"
+flat = false
+align = 1
+
+[node name="btn2analogs5" type="Button" parent="Container" index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 452.0
+margin_top = 414.0
+margin_right = 797.0
+margin_bottom = 485.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "1 digital (4) + 1 button"
+flat = false
+align = 1
+
+[node name="btn2analogs4" type="Button" parent="Container" index="4"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 452.0
+margin_top = 504.0
+margin_right = 797.0
+margin_bottom = 575.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
 text = "Debug"
 flat = false
 align = 1
 
-[node name="btn1analogs1button" type="Button" parent="Container" index="3"]
+[node name="btn1analogs1button" type="Button" parent="Container" index="5"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -139,6 +189,10 @@ align = 1
 [connection signal="pressed" from="Container/btn2analogs2" to="." method="_on_btn2analogs2_pressed"]
 
 [connection signal="pressed" from="Container/btn2analogs3" to="." method="_on_btn2analogs3_pressed"]
+
+[connection signal="pressed" from="Container/btn2analogs5" to="." method="_on_btn2analogs5_pressed"]
+
+[connection signal="pressed" from="Container/btn2analogs4" to="." method="_on_btn2analogs4_pressed"]
 
 [connection signal="pressed" from="Container/btn1analogs1button" to="." method="_on_btn1analogs1button_pressed"]
 

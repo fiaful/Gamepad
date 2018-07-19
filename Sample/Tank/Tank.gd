@@ -33,10 +33,18 @@ func _process(delta):
 		engine = Vector2()
 
 func _on_move(current_force, sender):
+	if sender.direction == []:
+		engine = Vector2(0, 0).rotated(rotation)
+		return
+		
 	if sender.angle != sender.INVALID_ANGLE and sender.angle != 0:
 		rotation = sender.angle
 
 	engine = Vector2(engine_speed, 0).rotated(rotation)
+
+func _on_move_digital(current_force, sender):
+	engine = current_force * engine_speed
+	rotation = sender.angle
 
 func _on_fire(current_force, sender):
 #	print (sender.angle)
