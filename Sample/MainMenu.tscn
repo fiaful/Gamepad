@@ -1,0 +1,145 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Sample/MainMenu.gd" type="Script" id=1]
+[ext_resource path="res://assets/arial.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+
+size = 24
+use_mipmaps = false
+use_filter = false
+font_data = ExtResource( 2 )
+_sections_unfolded = [ "Font", "Settings" ]
+
+[sub_resource type="Theme" id=2]
+
+default_font = SubResource( 1 )
+
+[node name="MainMenu" type="Node" index="0"]
+
+script = ExtResource( 1 )
+
+[node name="Container" type="Control" parent="." index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+theme = SubResource( 2 )
+_sections_unfolded = [ "Theme" ]
+
+[node name="btn2analogs" type="Button" parent="Container" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 452.0
+margin_top = 144.0
+margin_right = 797.0
+margin_bottom = 215.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "2 analogs"
+flat = false
+align = 1
+
+[node name="btn2analogs2" type="Button" parent="Container" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 452.0
+margin_top = 234.0
+margin_right = 797.0
+margin_bottom = 305.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "1 paddle + 1 stick + 1 button"
+flat = false
+align = 1
+
+[node name="btn2analogs3" type="Button" parent="Container" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 452.0
+margin_top = 324.0
+margin_right = 797.0
+margin_bottom = 395.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Debug"
+flat = false
+align = 1
+
+[node name="btn1analogs1button" type="Button" parent="Container" index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 452.0
+margin_top = 54.0
+margin_right = 797.0
+margin_bottom = 125.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "1 paddle + 2 buttons"
+flat = false
+align = 1
+
+[connection signal="pressed" from="Container/btn2analogs" to="." method="_on_btn2analogs_pressed"]
+
+[connection signal="pressed" from="Container/btn2analogs2" to="." method="_on_btn2analogs2_pressed"]
+
+[connection signal="pressed" from="Container/btn2analogs3" to="." method="_on_btn2analogs3_pressed"]
+
+[connection signal="pressed" from="Container/btn1analogs1button" to="." method="_on_btn1analogs1button_pressed"]
+
+

@@ -1,0 +1,63 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Sample/Tank/Tank.gd" type="Script" id=1]
+[ext_resource path="res://assets/tankGreen_outline.png" type="Texture" id=2]
+[ext_resource path="res://assets/barrelGreen_up.png" type="Texture" id=3]
+[ext_resource path="res://assets/barrelGreen_outline.png" type="Texture" id=4]
+
+
+
+
+[sub_resource type="CircleShape2D" id=1]
+
+custom_solver_bias = 0.0
+radius = 39.7242
+
+[node name="Tank" type="KinematicBody2D" index="0"]
+
+input_pickable = false
+collision_layer = 1
+collision_mask = 1
+collision/safe_margin = 0.08
+script = ExtResource( 1 )
+_sections_unfolded = [ "Transform" ]
+bullet = null
+
+[node name="Tank" type="Sprite" parent="." index="0"]
+
+rotation = 1.5708
+texture = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Turret" type="Sprite" parent="." index="1"]
+
+rotation = -1.5708
+scale = Vector2( 0.9, 0.9 )
+texture = ExtResource( 3 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Gun" type="Sprite" parent="Turret" index="0"]
+
+position = Vector2( 0, -20 )
+texture = ExtResource( 4 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Position2D" type="Position2D" parent="Turret" index="1"]
+
+position = Vector2( 0, -40 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="FireTimer" type="Timer" parent="Turret" index="2"]
+
+process_mode = 1
+wait_time = 0.25
+one_shot = false
+autostart = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." index="2"]
+
+shape = SubResource( 1 )
+
+[connection signal="timeout" from="Turret/FireTimer" to="." method="_on_FireTimer_timeout"]
+
+
