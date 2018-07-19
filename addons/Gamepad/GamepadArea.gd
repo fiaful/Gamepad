@@ -2,8 +2,9 @@
 
 # Component: GamepadArea
 # Author: Francesco Iafulli (fiaful)
+# E-mail: fiaful@hotmail.com
 # Version: 1.0
-# Last modify: 2018-07-18
+# Last modify: 2018-07-19
 
 # What is this:
 # E' un nodo facoltativo. Le sue funzioni sono 2 (una esclude l'altra):

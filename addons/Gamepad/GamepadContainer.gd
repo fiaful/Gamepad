@@ -2,8 +2,9 @@
 
 # Component: GamepadContainer
 # Author: Francesco Iafulli (fiaful)
+# E-mail: fiaful@hotmail.com
 # Version: 1.0
-# Last modify: 2018-07-18
+# Last modify: 2018-07-19
 
 # What is this:
 # E' il nodo che andrà a contenere tutti gli oggetti che costruiranno il gamepad.
@@ -129,7 +130,6 @@ class Finger:
 	func set_finger(_index, _object, _position, _type=""):
 		index = _index
 		type = _type if _type else _object.gamepad_type if _object else "UNKNOWN"
-		print (type)
 		pressed = true
 		position = _position
 		object = _object
