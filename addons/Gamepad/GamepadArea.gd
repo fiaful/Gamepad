@@ -88,4 +88,12 @@ func handle_move_event(event, finger):
 			# quindi chiedo all'oggetto contenuto di gestire l'evento
 			child.handle_move_event(event, finger)
 
+func handle_input(event):
+	# questo evento viene richiamato dal container in caso di eventi da tastiera
+	for child in get_children():
+		# pertanto propago l'evento a tutti i figli
+		if child.has_method("handle_input"):
+			# che sono in grado di gestirlo
+			child.handle_input(event)
+			
 ###[ END ]#######################################################################################################

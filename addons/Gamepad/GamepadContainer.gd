@@ -95,6 +95,14 @@ func _input(event):
 			if fingers[event.index].object:
 				fingers[event.index].object.handle_move_event(event, fingers[event.index])
 
+	# se l'evento è un'azione della tastiera (pressione o rilascio di tasti)
+	if event is InputEventKey:
+		# propago l'evento
+		for child in get_children():
+			# a tutti i figli di tipo gamepad
+			if "gamepad_type" in child:
+				child.handle_input(event)
+
 # questa funzione verifica se alle date coordinate (estratte dall'evento), è presente un oggetto del gamepad.
 # se è presente, lo ritorna, altrimenti restituisce null
 func _find_object_by_position(event):

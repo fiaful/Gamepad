@@ -79,7 +79,7 @@ func _on_button_fire(sender):
 	_on_FireTimer_timeout()
 
 func _on_button_engine(sender):
-	print ("engine")
+#	print ("engine")
 	reset = true
 	engine = Vector2(-engine_speed, 0).rotated(rotation)
 

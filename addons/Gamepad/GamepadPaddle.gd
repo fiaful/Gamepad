@@ -47,6 +47,8 @@ onready var paddle = $Paddle
 # animazione di visualizzazione/nascondimento della paddle
 onready var fader = $ShowHideAnimation
 
+onready var timer = $Timer
+
 ###[ EXPORTED VARIABLES ]########################################################################################
 
 # indica se la paddle deve essere disabilitata (se true, la paddle non riceverà i tocchi dell'utente)
@@ -88,6 +90,17 @@ export var low_limit = 0
 # impone un limite alto alla rotazione della paddle (limite inferiore e superiore possono essere invertiti)
 export var high_limit = 0
 
+# per utilizzare uniformemente gli oggetti anche in presenza di tastiera, consento di associare
+# direttamente degli input map per ruotare la paddle in senso antiorario e orario
+export var simulate_counter_clockwise = "ui_left"
+export var simulate_clockwise = "ui_right"
+
+# in caso di simulazione con la tastiera, indica lo step di incremento/decremento dell'angolo
+export var simulation_increment = 0.05
+
+# in caso di simulazione con la tastiera, indica la velocità di incremento/decremento dell'angolo
+export var simulation_delay = 0.01
+
 ###[ PRIVATE AND PUBLIC VARIABLES ]##############################################################################
 
 # centro della paddle (ovvero dello sfondo della paddle)
@@ -111,6 +124,18 @@ var finger_data = null
 # angolo di rotazione della paddle
 var angle = -1
 
+# indica se sto ruotando la paddle con i tasti della tastiera oppure no
+var simulation = false
+
+# ultimo angolo calcolato (serve per emettere i segnali solo se l'angolo corrente è diverso da quello precedente)
+var last_angle = INVALID_ANGLE
+
+# mantiene lo stato della visualizzazione dinamica
+var shown = true
+
+# indica la direzione di rotazione nel caso di simulazione con la tastiera
+var direction = 0
+
 ###[ SIGNALS ]###################################################################################################
 
 # viene emesso quando la paddle ruota, restituendo l'angolo di rotazione e l'oggetto paddle stesso (in modo da 
@@ -133,8 +158,18 @@ func _init():
 	if gamepad_paddle_template.get_child_count() > 0:
 		# prendo ogni oggetto nel template
 		for child in gamepad_paddle_template.get_children():
-			# e ne aggiungo un duplicato al mio nodo
-			add_child(child.duplicate())
+			# se l'oggetto è il timer
+			if child is Timer:
+				# ne creo il duplicato
+				var tmr = child.duplicate()
+				# lo aggiungo al mio nodo
+				add_child(tmr)
+				tmr.wait_time = simulation_delay
+				# connetto il suo segnale timeout allo script
+				tmr.connect("timeout", self, "_on_timer_timeout")
+			else:
+				# aggiungo un duplicato al mio nodo
+				add_child(child.duplicate())
 
 func _ready():
 	# se l'oggetto deve essere visualizzato dinamicamente (ovvero solo quando l'utente tocca lo schermo) lo nascondo
@@ -149,6 +184,48 @@ func _ready():
 	paddle.position = half_size
 	squared_half_size_length = half_size.x * half_size.y
 
+# emula la paddle tramite i tasti
+func handle_input(event):
+	if event is InputEventKey:
+		if !((simulate_counter_clockwise and event.is_action(simulate_counter_clockwise)) or \
+				(simulate_clockwise and event.is_action(simulate_clockwise))): return
+	else:
+		return
+	# verifica quale tasto è stato premuto
+	var cnt = simulate_counter_clockwise and Input.is_action_pressed(simulate_counter_clockwise)
+	var clk = simulate_clockwise and Input.is_action_pressed(simulate_clockwise)
+	simulation = false
+	# se nessuna delle 2 direzioni è premuta, azzero l'angolo e sollevo l'evento di rilascio
+	if !cnt and !clk:
+		# fermo il timer che si occupa di far ruotare la paddle
+		timer.stop()
+		handle_up_event(null, null)
+	else:		
+		# imposto la direzione di rotazione
+		if cnt:
+			clk = false
+			direction = -simulation_increment
+		elif clk:
+			cnt = false
+			direction = simulation_increment
+		# ed avvio il timer che si occuperà di far ruotare la paddle
+		timer.start()
+
+func _on_timer_timeout():
+	# inizializza la posizione del'oggetto
+	var ev = InputEventScreenTouch.new()
+	ev.position = get_parent().rect_global_position + static_position + half_size
+	simulation = true
+
+	# incrementa/decrementa l'angolo
+	angle += direction
+		
+	# se l'angolo è diverso dal precedente
+	if angle != last_angle:
+		last_angle = angle
+		# simulo la rotazione della paddle
+		handle_down_event(ev, null)
+
 # l'utente ha toccato lo schermo in corrispondenza della paddle o dell'area che contiene la paddle
 func handle_down_event(event, finger):
 	# se la paddle è disabilitata esco senza fare nulla (prima però resetto i dati interni)
@@ -162,7 +239,7 @@ func handle_down_event(event, finger):
 		_show_paddle(event)
 		
 	# se il tocco è avvenuto nella zona dello sfondo della paddle
-	if bg.get_global_rect().has_point(event.position):
+	if simulation or bg.get_global_rect().has_point(event.position):
 		# calcolo la forza e l'angolo, aggiorno la rotazione della paddle ed emetto il segnale
 		calculate(event)
 	else:
@@ -200,8 +277,9 @@ func handle_move_event(event, finger):
 # calcolo la forza, l'angolo, aggiorno la rotazione della paddle ed emetto il segnale
 func calculate(event):
 	# ricalcolo la posizione dell'evento in modo che lo 0,0 coincida con lo 0,0 dell'oggetto
-	var pos = event.position - rect_global_position
-	calculate_force(pos)
+	if !simulation:
+		var pos = event.position - rect_global_position
+		calculate_force(pos)
 	update_paddle_pos()
 	emit()
 
@@ -219,9 +297,13 @@ func calculate_force(pos):
 
 # aggiorno la rotazione della paddle in modo che graficamente sia coerente
 func update_paddle_pos():
-	var x = center_point.x + half_size.x * current_force.x
-	var y = center_point.y + half_size.y * current_force.y
-	var new_angle = Vector2(x, y).angle_to_point(center_point)
+	var new_angle
+	if !simulation:
+		var x = center_point.x + half_size.x * current_force.x
+		var y = center_point.y + half_size.y * current_force.y
+		new_angle = Vector2(x, y).angle_to_point(center_point)
+	else:
+		new_angle = angle
 	# quindi verifico che il nuovo angolo sia nei limiti
 	into_limits = false
 	var deg_angle = rad2deg(new_angle) + 180
@@ -252,6 +334,7 @@ func reset():
 	calculate_force(center_point)
 	update_paddle_pos()
 	angle = INVALID_ANGLE
+	last_angle = angle
 #	emit()
 	
 # emette il segnale per comunicare il cambiamento dell'angolo della paddle
@@ -265,6 +348,8 @@ func emit():
 func _show_paddle(event):
 	# se event è diverso dal null (nel caso in l'utente tocca la paddle o la sua area) calcolo la posizione
 	# in base a quella passata nell'evento
+	if shown: return
+	shown = true
 	if event:
 		rect_global_position = event.position - center_point
 	else:
@@ -278,6 +363,8 @@ func _show_paddle(event):
 	
 # nasconde la paddle
 func _hide_paddle():
+	if !shown: return
+	shown = false
 	# avvia l'animazione di nascondimento
 	if fader:
 		fader.stop()

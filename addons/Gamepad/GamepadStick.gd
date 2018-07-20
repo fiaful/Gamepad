@@ -175,6 +175,9 @@ var direction = []
 # indica se sto simulando lo stick con i tasti della tastiera oppure no
 var simulation = false
 
+# mantiene lo stato della visualizzazione dinamica
+var shown = true
+
 ###[ SIGNALS ]###################################################################################################
 
 # viene emesso quando lo stick si muove, restituendo il vettore della forza (se analogico altrimento valori 0, 1,
@@ -201,12 +204,6 @@ func _init():
 			# e ne aggiungo un duplicato al mio nodo
 			add_child(child.duplicate())
 
-func _input(event):
-	# verifica se è avvenuto un evento da tastiera, così da poter simulare lo stick tramite i tasti
-	if event is InputEventKey:
-		if event.is_action(simulate_up) or event.is_action(simulate_down) or event.is_action(simulate_left) or event.is_action(simulate_right):
-			handle_input()
-
 func _ready():
 	# se l'oggetto deve essere visualizzato dinamicamente (ovvero solo quando l'utente tocca lo schermo) lo nascondo
 	if show_dynamically:
@@ -222,13 +219,21 @@ func _ready():
 	squared_half_size_length = half_size.x * half_size.y
 
 # emula lo stick tramite i tasti
-func handle_input():
+func handle_input(event):
+	if event is InputEventKey:
+		if !((simulate_up and event.is_action(simulate_up)) or \
+				(simulate_down and event.is_action(simulate_down)) or \
+				(simulate_left and event.is_action(simulate_left)) or \
+				(simulate_right and event.is_action(simulate_right))): return
+	else:
+		return
+		
 	var ev
 	# verifica quale tasto è stato premuto
-	var up = Input.is_action_pressed(simulate_up)
-	var down = Input.is_action_pressed(simulate_down)
-	var left = Input.is_action_pressed(simulate_left)
-	var right = Input.is_action_pressed(simulate_right)
+	var up = simulate_up and Input.is_action_pressed(simulate_up)
+	var down = simulate_down and Input.is_action_pressed(simulate_down)
+	var left = simulate_left and Input.is_action_pressed(simulate_left)
+	var right = simulate_right and Input.is_action_pressed(simulate_right)
 	simulation = false
 	# se nessuna delle 4 direzioni è premuta, azzero la forza così che verrà sollevato l'evento di rilascio
 	if !up and !down and !left and !right:
@@ -477,6 +482,8 @@ func to_digital():
 func _show_stick(event):
 	# se event è diverso dal null (nel caso in l'utente tocca lo stick o la sua area) calcolo la posizione
 	# in base a quella passata nell'evento
+	if shown: return
+	shown = true
 	if event:
 		rect_global_position = event.position - center_point
 	else:
@@ -490,6 +497,8 @@ func _show_stick(event):
 
 # nasconde lo stick	
 func _hide_stick():
+	if !shown: return
+	shown = false
 	# avvia l'animazione di nascondimento
 	if fader:
 		fader.stop()

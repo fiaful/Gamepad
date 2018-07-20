@@ -100,6 +100,9 @@ var is_pressed = false
 # indica se sto simulando il button con la tastiera oppure no
 var simulation = false
 
+# mantiene lo stato della visualizzazione dinamica
+var shown = true
+
 ###[ METHODS ]###################################################################################################
 
 # costruisce l'albero dei nodi necessari all'oggetto prendendoli dal template
@@ -134,17 +137,12 @@ func _ready():
 	# ricavo i restanti valori che mi serviranno più avanti per fare i calcoli
 	center_point = self.rect_size / 2
 
-func _input(event):
-	# verifica se è avvenuto un evento da tastiera, così da poter simulare la pressione del button
-	if event is InputEventKey and event.is_action(simulate_action):
-		handle_input()
-
 # emula il button tramite tastiera
-func handle_input():
+func handle_input(event):
 	# verifica quale tasto è stato premuto
 	simulation = false
 	# se il tasto premuto corrisponde a quello indicato
-	if Input.is_action_pressed(simulate_action):
+	if simulate_action and Input.is_action_pressed(simulate_action):
 		simulation = true
 		# e il button non era precedentemente premuto
 		if !is_pressed:
@@ -236,6 +234,8 @@ func fire_stop():
 func _show_button(event):
 	# se event è diverso dal null (nel caso in l'utente tocca il button o la sua area) calcolo la posizione
 	# in base a quella passata nell'evento
+	if shown: return
+	shown = true
 	if event:
 		rect_global_position = event.position - center_point
 	else:
@@ -248,6 +248,8 @@ func _show_button(event):
 
 # nasconde il button
 func _hide_button():
+	if !shown: return
+	shown = false
 	# avvia l'animazione di nascondimento
 	if fader:
 		fader.stop()
