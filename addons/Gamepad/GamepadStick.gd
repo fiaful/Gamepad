@@ -4,7 +4,7 @@
 # Author: Francesco Iafulli (fiaful)
 # E-mail: fiaful@hotmail.com
 # Version: 1.0
-# Last modify: 2018-07-19
+# Last modify: 2018-07-20
 
 # What is this:
 # E' l'oggetto che consente di gestire stick virtuali, analogici o digitali.
@@ -132,10 +132,21 @@ export var valid_threshold = 0.2
 # (es.: con un valore = 0.25, lo stick restituirà come forze i soli valori 0, 0.25, 0.5, 0.75, 1)
 export var step = 0.0
 
+# per utilizzare uniformemente gli oggetti anche in presenza di tastiera, consento di associare
+# direttamente degli input map alle direzioni
+# Attenzione: la simulazione non funzionerà correttamente con stick analogici
+export var simulate_up = "ui_up"
+export var simulate_left = "ui_left"
+export var simulate_down = "ui_down"
+export var simulate_right = "ui_right"
+
 ###[ PRIVATE AND PUBLIC VARIABLES ]##############################################################################
 
 # centro dello stick (ovvero dello sfondo dello stick)
 var center_point = Vector2(0,0)
+
+# ultima forza calcolata (serve per emettere i segnali solo se la forza corrente è diversa da quella precedente)
+var last_force = Vector2(0,0)
 
 # forza calcolata dal centro dello stick (oppure i valori digitali nel caso di stick digitali)
 var current_force = Vector2(0,0)
@@ -160,6 +171,9 @@ var angle = -1
 
 # lista delle direzioni digitali in cui si trova lo stick
 var direction = []
+
+# indica se sto simulando lo stick con i tasti della tastiera oppure no
+var simulation = false
 
 ###[ SIGNALS ]###################################################################################################
 
@@ -187,6 +201,11 @@ func _init():
 			# e ne aggiungo un duplicato al mio nodo
 			add_child(child.duplicate())
 
+func _input(event):
+	# verifica se è avvenuto un evento da tastiera, così da poter simulare lo stick tramite i tasti
+	if event is InputEventKey:
+		handle_input()
+
 func _ready():
 	# se l'oggetto deve essere visualizzato dinamicamente (ovvero solo quando l'utente tocca lo schermo) lo nascondo
 	if show_dynamically:
@@ -201,6 +220,56 @@ func _ready():
 	half_stick = (stick.texture.get_size() * stick.scale) / 2
 	squared_half_size_length = half_size.x * half_size.y
 
+# emula lo stick tramite i tasti
+func handle_input():
+	var ev
+	# verifica quale tasto è stato premuto
+	var up = Input.is_action_pressed(simulate_up)
+	var down = Input.is_action_pressed(simulate_down)
+	var left = Input.is_action_pressed(simulate_left)
+	var right = Input.is_action_pressed(simulate_right)
+	simulation = false
+	# se nessuna delle 4 direzioni è premuta, azzero la forza così che verrà sollevato l'evento di rilascio
+	if !up and !down and !left and !right:
+		current_force = Vector2(0, 0)
+	else:
+		# se almeno una delle 4 direzioni è premuta, inizializza la posizione del'oggetto
+		ev = InputEventScreenTouch.new()
+		ev.position = get_parent().rect_global_position + static_position + half_size
+		simulation = true
+		
+		# se lo stick è di qualsiasi tipo tranne un DIGITAL 4 diagonale
+		if stick_type != STICK_TYPE._DIGITAL_4_X and stick_type != STICK_TYPE._DIGITAL_4_ISO:
+			# imposto la forza al valore digitale corrispondente ai tasti premuti
+			current_force.x = -1 if left else 1 if right else 0
+			current_force.y = -1 if up else 1 if down else 0
+		else:
+			# altrimenti, se lo stick è di tipo DIGITAL 4 diagonale, decido io la forza in base al tasto premuto
+			if up:
+				down = false; left = false; right = false
+				current_force = Vector2(-1, -1)
+			elif left:
+				down = false; up = false; right = false
+				current_force = Vector2(-1, 1)
+			elif down:
+				up = false; left = false; right = false
+				current_force = Vector2(1, 1)
+			elif right:
+				down = false; left = false; up = false
+				current_force = Vector2(1, -1)
+
+	# se la forza è diversa da 0				
+	if current_force.x != 0 or current_force.y != 0:
+		# ed è diversa dalla precedente
+		if last_force.x != current_force.x or last_force.y != current_force.y:
+			# simulo la pressione del dito sullo stick
+			handle_down_event(ev, null)
+	else:
+		# mentre se la forza è 0 ma la precedente non lo era,
+		if last_force.x != 0 or last_force.y != 0:
+			# simulo il rilascio del dito dallo stick
+			handle_up_event(ev, null)
+
 # l'utente ha toccato lo schermo in corrispondenza dello stick o dell'area che contiene lo stick
 func handle_down_event(event, finger):
 	# se lo stick è disabilitato esco senza fare nulla (prima però resetto i dati interni)
@@ -214,7 +283,7 @@ func handle_down_event(event, finger):
 		_show_stick(event)
 	
 	# se il tocco è avvenuto nella zona dello sfondo dello stick
-	if bg.get_global_rect().has_point(event.position):
+	if simulation or bg.get_global_rect().has_point(event.position):
 		# calcolo la forza, aggiorno la posizione del centro dello stick ed emetto il segnale
 		calculate(event)
 	else:
@@ -259,15 +328,16 @@ func calculate(event):
 
 func calculate_force(pos):
 #	print ("pos: ", pos, " - center_point: ", center_point, " - half_size: ", half_size) 
-	# calcolo la forza in relazione alla posizione del mouse e il centro dello stick, e la normalizzo
-	current_force.x = (pos.x - center_point.x) / half_size.x
-	current_force.y = (pos.y - center_point.y) / half_size.y
-	if current_force.length_squared() > 1:
-		current_force = current_force / current_force.length()
-	# quindi se la forza è minore della soglia di validità, resituisco 0,0 (per comunicare che 
-	# non è stato effettuato uno spostamento valido del centro dello stick)
-	if (current_force.length() < valid_threshold):
-		current_force = Vector2(0,0)
+	if !simulation:
+		# calcolo la forza in relazione alla posizione del mouse e il centro dello stick, e la normalizzo
+		current_force.x = (pos.x - center_point.x) / half_size.x
+		current_force.y = (pos.y - center_point.y) / half_size.y
+		if current_force.length_squared() > 1:
+			current_force = current_force / current_force.length()
+		# quindi se la forza è minore della soglia di validità, resituisco 0,0 (per comunicare che 
+		# non è stato effettuato uno spostamento valido del centro dello stick)
+		if (current_force.length() < valid_threshold):
+			current_force = Vector2(0,0)
 	# effettuo aggiustamenti vari alla forza in baso a che tipo di stick sto gestendo
 	select_force()
 
@@ -290,14 +360,19 @@ func update_stick_pos():
 # effettuo un reset dei dati interni, ovvero faccio si che la forza sia impostata a 0,
 # il centro dello stick torni graficamente al centro, e sia impostato un angolo invalido
 func reset():
-	calculate_force(center_point)
+#	calculate_force(center_point)
+	current_force = Vector2(0,0)
+	last_force = Vector2(0,0)
 	update_stick_pos()
 	angle = INVALID_ANGLE
 #	emit()
 
 # emette il segnale per comunicare il cambiamento della forza dello stick	
 func emit():
-	emit_signal("gamepad_force_changed", current_force, self)
+	if current_force.x != last_force.x or current_force.y != last_force.y:
+		# solo se la forza corrente è diversa da quella precedente
+		last_force = Vector2(current_force.x, current_force.y)
+		emit_signal("gamepad_force_changed", current_force, self)
 
 # se lo stick è di tipo DIGITAL 4 ISO, e la posizione del centro dello stick capita in una
 # diagonale alta, viene aggiustata graficamente la posizione
@@ -408,7 +483,7 @@ func _show_stick(event):
 		rect_position = static_position
 	# avvio l'animazione di visualizzazione
 	if fader:
-		reset()
+		if !simulation: reset()
 		fader.stop()
 		fader.play("fade_in", -1, 10)
 

@@ -157,7 +157,7 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 margin_left = -124.5
 margin_top = -186.0
-margin_right = 3.0
+margin_right = 2.5
 margin_bottom = -58.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -234,6 +234,10 @@ hide_stick_on_stop = true
 adjust_iso = 0
 valid_threshold = 0.2
 step = 1.0
+simulate_up = "ui_up"
+simulate_left = ""
+simulate_down = "ui_down"
+simulate_right = ""
 
 [node name="CheckBox" type="CheckBox" parent="Gamepad" index="1"]
 

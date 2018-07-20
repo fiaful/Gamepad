@@ -33,30 +33,35 @@ func _process(delta):
 		engine = Vector2()
 
 func _on_move(current_force, sender):
+	print (current_force, " - ", sender.angle)
 	if sender.direction == []:
 		engine = Vector2(0, 0).rotated(rotation)
 		return
 		
-	if sender.angle != sender.INVALID_ANGLE and sender.angle != 0:
+	if sender.angle != sender.INVALID_ANGLE: # and sender.angle != 0:
 		rotation = sender.angle
 
 	engine = Vector2(engine_speed, 0).rotated(rotation)
 
 func _on_move_digital(current_force, sender):
+	print (current_force, " - ", sender.angle)
 	engine = current_force * engine_speed
-	rotation = sender.angle
+	if sender.direction.size() > 0:
+		rotation = sender.angle
 
 func _on_fire(current_force, sender):
-#	print (sender.angle)
-	if sender.angle != sender.INVALID_ANGLE and sender.angle != 0:
+	print (current_force, " - ", sender.angle)
+	if sender.angle != sender.INVALID_ANGLE: # and sender.angle != 0:
 		turret.rotation = halfPI + sender.angle - rotation
 	if fire_timer.is_stopped():
 		fire_timer.start()
 
 func _on_stop():
+	print ("stop")
 	engine = Vector2(0, 0)
 
 func _on_stop_fire():
+	print ("fire stop")
 	fire_timer.stop()
 
 func _on_FireTimer_timeout():
@@ -66,16 +71,20 @@ func _on_FireTimer_timeout():
 	b.shot(turret.rotation + rotation)
 
 func _on_rotate(current_angle, sender):
+	print (current_angle)
 	rotation = current_angle - PI
 
 func _on_button_fire(sender):
+	print ("fire!")
 	_on_FireTimer_timeout()
 
 func _on_button_engine(sender):
+	print ("engine")
 	reset = true
 	engine = Vector2(-engine_speed, 0).rotated(rotation)
 
 func _on_updown(current_force, sender):
+	print (current_force, " - ", sender.angle)
 	reset = false
 	if sender.UP in sender.direction:
 		engine = Vector2(-engine_speed, 0).rotated(rotation)
@@ -85,4 +94,5 @@ func _on_updown(current_force, sender):
 		engine = Vector2(0, 0)
 
 func _on_updown_stop():
+	print ("stop")
 	engine = Vector2(0, 0)
