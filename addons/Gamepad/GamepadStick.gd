@@ -52,6 +52,7 @@
 
 # To do:
 #	- inserire un flag per invertire l'asse y
+#	- provare a gestire l'analogico da tastiera come nella paddle
 
 # Changelog:
 #

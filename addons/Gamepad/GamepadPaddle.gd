@@ -4,7 +4,7 @@
 # Author: Francesco Iafulli (fiaful)
 # E-mail: fiaful@hotmail.com
 # Version: 1.0
-# Last modify: 2018-07-19
+# Last modify: 2018-07-20
 
 # What is this:
 # E' l'oggetto che consente di gestire paddle virtuali analogici (la paddle è un controller che ruota su se stesso,

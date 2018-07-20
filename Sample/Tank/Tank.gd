@@ -96,3 +96,4 @@ func _on_updown(current_force, sender):
 func _on_updown_stop():
 	print ("stop")
 	engine = Vector2(0, 0)
+

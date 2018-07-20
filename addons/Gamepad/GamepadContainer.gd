@@ -4,7 +4,7 @@
 # Author: Francesco Iafulli (fiaful)
 # E-mail: fiaful@hotmail.com
 # Version: 1.0
-# Last modify: 2018-07-19
+# Last modify: 2018-07-20
 
 # What is this:
 # E' il nodo che andrà a contenere tutti gli oggetti che costruiranno il gamepad.
