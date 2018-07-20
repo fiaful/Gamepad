@@ -204,7 +204,8 @@ func _init():
 func _input(event):
 	# verifica se è avvenuto un evento da tastiera, così da poter simulare lo stick tramite i tasti
 	if event is InputEventKey:
-		handle_input()
+		if event.is_action(simulate_up) or event.is_action(simulate_down) or event.is_action(simulate_left) or event.is_action(simulate_right):
+			handle_input()
 
 func _ready():
 	# se l'oggetto deve essere visualizzato dinamicamente (ovvero solo quando l'utente tocca lo schermo) lo nascondo

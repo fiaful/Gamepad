@@ -4,7 +4,7 @@
 # Author: Francesco Iafulli (fiaful)
 # E-mail: fiaful@hotmail.com
 # Version: 1.0
-# Last modify: 2018-07-19
+# Last modify: 2018-07-20
 
 # What is this:
 # E' l'oggetto che consente di gestire i pulsanti del gamepad
@@ -71,6 +71,10 @@ export var static_position = Vector2(0, 0)
 # se vale 0, l'utente dovrà rilasciare e premere nuovamente il button per emettere un nuovo segnale di fire
 export var autofire_delay = 0.0
 
+# per utilizzare uniformemente gli oggetti anche in presenza di tastiera, consento di associare
+# direttamente un input map per premere il button
+export var simulate_action = "ui_select"
+
 ###[ SIGNALS ]###################################################################################################
 
 # viene emesso quando il button è premuto (una sola volta)
@@ -92,6 +96,9 @@ var finger_data = null
 
 # indica lo stato de button (se premuto - true - o rilasciato - false)
 var is_pressed = false
+
+# indica se sto simulando il button con la tastiera oppure no
+var simulation = false
 
 ###[ METHODS ]###################################################################################################
 
@@ -126,6 +133,31 @@ func _ready():
 	rect_position = static_position
 	# ricavo i restanti valori che mi serviranno più avanti per fare i calcoli
 	center_point = self.rect_size / 2
+
+func _input(event):
+	# verifica se è avvenuto un evento da tastiera, così da poter simulare la pressione del button
+	if event is InputEventKey and event.is_action(simulate_action):
+		handle_input()
+
+# emula il button tramite tastiera
+func handle_input():
+	# verifica quale tasto è stato premuto
+	simulation = false
+	# se il tasto premuto corrisponde a quello indicato
+	if Input.is_action_pressed(simulate_action):
+		simulation = true
+		# e il button non era precedentemente premuto
+		if !is_pressed:
+			# inizializzo la posizione del'oggetto
+			var ev = InputEventScreenTouch.new()
+			ev.position = get_parent().rect_global_position + static_position + center_point
+			# simulo la pressione del dito sul button
+			handle_down_event(ev, null)
+	else:
+		# mentre se il tasto corrispondente non è premuto e il button lo era,
+		if is_pressed:
+			# simulo il rilascio del dito dal button
+			handle_up_event(null, null)
 
 # l'utente ha toccato lo schermo in corrispondenza del button o dell'area che contiene il button
 func handle_down_event(event, finger):
